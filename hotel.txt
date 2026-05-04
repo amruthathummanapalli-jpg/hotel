@@ -1,0 +1,140 @@
+import java.util.*;
+
+class Room {
+    int id;
+    String category;
+    double price;
+    boolean available;
+
+    Room(int id, String category, double price) {
+        this.id = id;
+        this.category = category;
+        this.price = price;
+        this.available = true;
+    }
+}
+
+class Reservation {
+    int id;
+    String customerName;
+    Room room;
+
+    Reservation(int id, String customerName, Room room) {
+        this.id = id;
+        this.customerName = customerName;
+        this.room = room;
+    }
+}
+
+public class Main {
+
+    static List<Room> rooms = new ArrayList<>();
+    static List<Reservation> reservations = new ArrayList<>();
+    static int reservationCounter = 1;
+
+    public static void main(String[] args) {
+
+        // Sample rooms
+        rooms.add(new Room(1, "Standard", 1000));
+        rooms.add(new Room(2, "Deluxe", 2000));
+        rooms.add(new Room(3, "Suite", 3000));
+
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n===== HOTEL SYSTEM =====");
+            System.out.println("1. View Rooms");
+            System.out.println("2. Book Room");
+            System.out.println("3. Cancel Reservation");
+            System.out.println("4. View Reservations");
+            System.out.println("5. Exit");
+
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    viewRooms();
+                    break;
+
+                case 2:
+                    bookRoom(sc);
+                    break;
+
+                case 3:
+                    cancelReservation(sc);
+                    break;
+
+                case 4:
+                    viewReservations();
+                    break;
+
+                case 5:
+                    System.exit(0);
+            }
+        }
+    }
+
+    static void viewRooms() {
+        System.out.println("\nAvailable Rooms:");
+        for (Room r : rooms) {
+            if (r.available) {
+                System.out.println("ID: " + r.id +
+                        " | Category: " + r.category +
+                        " | Price: " + r.price);
+            }
+        }
+    }
+
+    static void bookRoom(Scanner sc) {
+        System.out.print("Enter Room ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter Your Name: ");
+        String name = sc.nextLine();
+
+        for (Room r : rooms) {
+            if (r.id == id && r.available) {
+                r.available = false;
+
+                Reservation res = new Reservation(reservationCounter++, name, r);
+                reservations.add(res);
+
+                System.out.println(" Booking Successful! Reservation ID: " + res.id);
+                return;
+            }
+        }
+
+        System.out.println(" Room not available!");
+    }
+
+    static void cancelReservation(Scanner sc) {
+        System.out.print("Enter Reservation ID: ");
+        int id = sc.nextInt();
+
+        Iterator<Reservation> it = reservations.iterator();
+
+        while (it.hasNext()) {
+            Reservation r = it.next();
+            if (r.id == id) {
+                r.room.available = true;
+                it.remove();
+
+                System.out.println(" Reservation Cancelled!");
+                return;
+            }
+        }
+
+        System.out.println(" Reservation not found!");
+    }
+
+    static void viewReservations() {
+        System.out.println("\nReservations:");
+        for (Reservation r : reservations) {
+            System.out.println("ID: " + r.id +
+                    " | Name: " + r.customerName +
+                    " | Room: " + r.room.id +
+                    " (" + r.room.category + ")");
+        }
+    }
+}
